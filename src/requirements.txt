@@ -1,0 +1,17 @@
+sqlalchemy==1.4.49
+asyncpg
+fastapi
+aiofiles
+alembic
+bcrypt
+cryptography
+orjson
+passlib
+pydantic
+pydantic-settings
+python-dotenv
+python-jose
+python-multipart
+ujson
+uvicorn
+py7zr

@@ -1,6 +1,7 @@
 from logging import config as logging_config
 from pathlib import Path
 
+from dotenv import load_dotenv
 from pydantic import PostgresDsn
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -10,10 +11,12 @@ logging_config.dictConfig(LOGGING)
 
 BASE_DIR = Path(__file__).parent.parent
 ENV_PATH = BASE_DIR.parent / ".env"
+if ENV_PATH.exists():
+    load_dotenv(ENV_PATH)
 
 
 class JWTSettings(BaseSettings):
-    model_config = SettingsConfigDict(env_prefix="jwt_", env_file=ENV_PATH, env_file_encoding="utf-8")
+    model_config = SettingsConfigDict(env_prefix="jwt_")
 
     secret_key: str
     algorithm: str = "HS256"
@@ -22,7 +25,7 @@ class JWTSettings(BaseSettings):
 
 
 class ApplicationSettings(BaseSettings):
-    model_config = SettingsConfigDict(env_prefix="app_", env_file=ENV_PATH, env_file_encoding="utf-8")
+    model_config = SettingsConfigDict(env_prefix="app_")
 
     host: str = "127.0.0.1"
     port: int = 8000
@@ -38,7 +41,7 @@ class ApplicationSettings(BaseSettings):
 
 
 class DatabaseSettings(BaseSettings):
-    model_config = SettingsConfigDict(env_prefix="database_", env_file=ENV_PATH, env_file_encoding="utf-8")
+    model_config = SettingsConfigDict(env_prefix="database_")
 
     dsn: PostgresDsn
     echo: bool = False
