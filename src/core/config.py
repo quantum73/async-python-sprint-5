@@ -1,3 +1,4 @@
+import typing as tp
 from logging import config as logging_config
 from pathlib import Path
 
@@ -35,7 +36,7 @@ class ApplicationSettings(BaseSettings):
     openapi_url: str = "/openapi.json"
     storage_directory: Path = BASE_DIR / "storage"
 
-    def model_post_init(self, __context) -> None:
+    def model_post_init(self, __context: tp.Any) -> None:
         if not self.storage_directory.exists():
             self.storage_directory.mkdir(parents=True, exist_ok=True)
 

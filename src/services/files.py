@@ -22,11 +22,12 @@ class PreparedFileObject:
     path: str
     obj: UploadFile = field(repr=False)
 
-    size: int = field(init=False)
-    name: str = field(init=False)
-    full_file_path: str = field(init=False)
+    size: int = field(init=False, repr=False)
+    name: str = field(init=False, repr=False)
+    full_file_path: str = field(init=False, repr=False)
 
-    def __post_init__(self):
+    @tp.no_type_check
+    def __post_init__(self) -> None:
         self.size = self.obj.size
         file_name = self.obj.filename
 
@@ -66,23 +67,23 @@ async def create_file(db: AsyncSession, *, prepared_file_object: PreparedFileObj
     return file_in_db
 
 
-async def get_file_by_id(db: AsyncSession, *, idx: str) -> ModelType:
+async def get_file_by_id(db: AsyncSession, *, idx: str) -> ModelType | None:
     logger.info(f"Get file by {idx} id")
-    files = await files_crud.get(db, idx=idx)
-    return files
+    file: ModelType | None = await files_crud.get(db, idx=idx)
+    return file
 
 
-async def get_file_by_path(db: AsyncSession, *, target_path: str) -> ModelType:
+async def get_file_by_path(db: AsyncSession, *, target_path: str) -> ModelType | None:
     logger.info(f'Get file by "{target_path}" path')
-    file = await files_crud.get_file_by_path(db, target_path=target_path)
+    file: ModelType | None = await files_crud.get_file_by_path(db, target_path=target_path)
     return file
 
 
 async def get_file_by_id_or_path(db: AsyncSession, *, value: str) -> ModelType | None:
     logger.info(f'Get file by "{value}" id or path')
-    idx = value if is_valid_uuid4(value) else None
+    idx = value if is_valid_uuid4(value) else ""
     path = value
-    file = await files_crud.get_file_by_id_or_path(db, idx=idx, path=path)
+    file: ModelType | None = await files_crud.get_file_by_id_or_path(db, idx=idx, path=path)
     return file
 
 
@@ -94,7 +95,7 @@ async def get_files_list(db: AsyncSession, *, skip: int, limit: int) -> list[Mod
 
 async def get_user_files(db: AsyncSession, *, user_id: str, skip: int, limit: int) -> list[ModelType]:
     logger.info(f"Get User(#{user_id}) files [skip={skip};limit={limit}]")
-    files = await files_crud.get_multi_by_user(db, user_id=user_id, skip=skip, limit=limit)
+    files: list[ModelType] = await files_crud.get_multi_by_user(db, user_id=user_id, skip=skip, limit=limit)
     return files
 
 
@@ -104,7 +105,7 @@ async def search_files(db: AsyncSession, *, search_options: PydanticSchemaType |
     options = search_options_as_dict["options"]
     order_by_data = options["order_by"]
     try:
-        files = await files_crud.search_files(
+        files: list[ModelType] = await files_crud.search_files(
             db,
             path=options["path"],
             extension=options["extension"],

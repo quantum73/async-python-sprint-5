@@ -48,7 +48,7 @@ def get_username_from_token(*, token: str) -> str:
 
 async def create_user(db: AsyncSession, *, username: str, password: str) -> ModelType:
     logger.info("Try to create user")
-    user = await users_crud.get_by_username(db, username=username)
+    user = await users_crud.get_by_username(db, username=username)  # type: ignore
     if user:
         logger.error(f"User {username} already exists")
         raise BadRequestException(detail="User with such username already exists")
@@ -65,9 +65,9 @@ async def create_user(db: AsyncSession, *, username: str, password: str) -> Mode
     return user
 
 
-async def authenticate_user(db: AsyncSession, *, username: str, password: str) -> ModelType | bool:
+async def authenticate_user(db: AsyncSession, *, username: str, password: str) -> ModelType:
     logger.info("Try to authenticate user")
-    user = await users_crud.get_by_username(db, username=username)
+    user = await users_crud.get_by_username(db, username=username)  # type: ignore
     if not user:
         logger.error("User does not exist")
         raise UnauthorizedException()
@@ -87,7 +87,7 @@ async def get_current_user(
     logger.info("Try to get user from JWT token")
     username = get_username_from_token(token=token)
     logger.info("Try to get user by username")
-    user = await users_crud.get_by_username(db, username=username)
+    user = await users_crud.get_by_username(db, username=username)  # type: ignore
     if user is None or not user.is_active:
         logger.error("User does not exists or not active")
         raise UnauthorizedException()

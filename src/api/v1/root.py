@@ -8,6 +8,6 @@ root_router = APIRouter()
 
 
 @root_router.get("/ping", status_code=status.HTTP_200_OK)
-async def ping_services(db: AsyncSession = Depends(get_session)):
+async def ping_services(db: AsyncSession = Depends(get_session)) -> dict:
     database_info = await root_services.database_access_time(db)
     return {database_info.name: database_info.access_time}

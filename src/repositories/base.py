@@ -13,24 +13,24 @@ PydanticSchemaType = tp.TypeVar("PydanticSchemaType", bound=BaseModel)
 
 
 class Repository:
-    def get(self, *args, **kwargs):
+    def get(self, *args, **kwargs) -> tp.Any:  # type: ignore
         raise NotImplementedError
 
-    def get_multi(self, *args, **kwargs):
+    def get_multi(self, *args, **kwargs) -> tp.Any:  # type: ignore
         raise NotImplementedError
 
-    def create(self, *args, **kwargs):
+    def create(self, *args, **kwargs) -> tp.Any:  # type: ignore
         raise NotImplementedError
 
-    def update(self, *args, **kwargs):
+    def update(self, *args, **kwargs) -> tp.Any:  # type: ignore
         raise NotImplementedError
 
-    def delete(self, *args, **kwargs):
+    def delete(self, *args, **kwargs) -> tp.Any:  # type: ignore
         raise NotImplementedError
 
 
 class DatabaseRepository(Repository, tp.Generic[ModelType, PydanticSchemaType]):
-    def __init__(self, model: tp.Type[ModelType]):
+    def __init__(self, model: tp.Type[ModelType]) -> None:
         self._model = model
 
     async def get(self, db: AsyncSession, *, idx: str | UUID) -> ModelType | None:
@@ -38,7 +38,7 @@ class DatabaseRepository(Repository, tp.Generic[ModelType, PydanticSchemaType]):
         results = await db.execute(statement=statement)
         return results.scalar_one_or_none()
 
-    async def get_multi(self, db: AsyncSession, *, skip=0, limit=100) -> list[ModelType]:
+    async def get_multi(self, db: AsyncSession, *, skip: int = 0, limit: int = 100) -> list[ModelType]:
         statement = select(self._model).offset(skip).limit(limit)
         results = await db.execute(statement=statement)
         return results.scalars().all()

@@ -6,6 +6,7 @@ exclude = [
     'env',
     '.env',
     'tests',
+    'migrations',
 ]
 plugins = [
     "sqlalchemy.ext.mypy.plugin",

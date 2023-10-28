@@ -12,8 +12,8 @@ from core.enums import CompressionType
 
 
 class CompressorProtocol(tp.Protocol):
-    suffix: str | None
-    media_type: str | None
+    suffix: str
+    media_type: str
 
     @staticmethod
     def prepare_file_path(file_path: str | Path) -> Path:
@@ -25,8 +25,8 @@ class CompressorProtocol(tp.Protocol):
 
 
 class NoneCompressor(CompressorProtocol):
-    suffix = ".zip"
-    media_type = "application/x-zip-compressed"
+    suffix = ""
+    media_type = ""
 
     @classmethod
     def get_response(cls, *, file_path: str | Path) -> FileResponse:
@@ -51,7 +51,7 @@ class ZipCompressor(CompressorProtocol):
         return StreamingResponse(
             iter([buffer.getvalue()]),
             media_type=cls.media_type,
-            headers={"Content-Disposition": f"attachment; filename=%s" % zip_filename},
+            headers={"Content-Disposition": "attachment; filename=%s" % zip_filename},
         )
 
 
@@ -72,7 +72,7 @@ class TarCompressor(CompressorProtocol):
         return StreamingResponse(
             iter([buffer.getvalue()]),
             media_type=cls.media_type,
-            headers={"Content-Disposition": f"attachment; filename=%s" % tar_filename},
+            headers={"Content-Disposition": "attachment; filename=%s" % tar_filename},
         )
 
 
@@ -92,11 +92,11 @@ class SevenZCompressor(CompressorProtocol):
         return StreamingResponse(
             iter([buffer.getvalue()]),
             media_type=cls.media_type,
-            headers={"Content-Disposition": f"attachment; filename=%s" % seven_z_filename},
+            headers={"Content-Disposition": "attachment; filename=%s" % seven_z_filename},
         )
 
 
-COMPRESSORS_MAP = {
+COMPRESSORS_MAP: tp.Mapping[str, CompressorProtocol] = {
     CompressionType.zip.value: ZipCompressor,
     CompressionType.tar.value: TarCompressor,
     CompressionType.seven_z.value: SevenZCompressor,

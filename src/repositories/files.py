@@ -20,7 +20,9 @@ class FileRepository(DatabaseRepository[File, PydanticSchemaType]):
         results = await db.execute(statement=statement)
         return results.scalar_one_or_none()
 
-    async def get_multi_by_user(self, db: AsyncSession, *, user_id: str, skip=0, limit=100) -> list[ModelType]:
+    async def get_multi_by_user(
+        self, db: AsyncSession, *, user_id: str, skip: int = 0, limit: int = 100
+    ) -> list[ModelType]:
         statement = (
             select(self._model)
             .where(self._model.user_id == user_id)
@@ -52,4 +54,4 @@ class FileRepository(DatabaseRepository[File, PydanticSchemaType]):
         return results.scalars().all()
 
 
-files_crud = FileRepository(File)
+files_crud: FileRepository = FileRepository(File)

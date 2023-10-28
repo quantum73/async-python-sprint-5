@@ -24,7 +24,7 @@ class Database:
             await conn.run_sync(Base.metadata.drop_all)
 
     @asynccontextmanager
-    async def session(self) -> tp.Generator[AsyncSession, None, None]:
+    async def session(self) -> tp.AsyncGenerator[AsyncSession, None]:
         session: AsyncSession = self._session_factory()
         try:
             yield session
@@ -38,6 +38,6 @@ class Database:
 database = Database(dsn=str(settings.db.dsn), echo=settings.db.echo)
 
 
-async def get_session() -> tp.Generator[AsyncSession, None, None]:
+async def get_session() -> tp.AsyncGenerator[AsyncSession, None]:
     async with database.session() as s:
         yield s

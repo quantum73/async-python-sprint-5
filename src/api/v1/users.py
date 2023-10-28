@@ -19,8 +19,12 @@ user_router = APIRouter()
 async def register(
     form_data: tp.Annotated[HTTPBasicCredentials, Body()],
     db: AsyncSession = Depends(get_session),
-):
-    new_user = await users_services.create_user(db, username=form_data.username, password=form_data.password)
+) -> users_schemas.UserOutputDBSchema:
+    new_user = await users_services.create_user(
+        db,
+        username=form_data.username,
+        password=form_data.password,
+    )  # type: ignore
     return new_user
 
 
@@ -28,7 +32,11 @@ async def register(
 async def auth(
     form_data: tp.Annotated[OAuth2PasswordRequestForm, Depends()],
     db: AsyncSession = Depends(get_session),
-):
-    user = await users_services.authenticate_user(db, username=form_data.username, password=form_data.password)
+) -> users_schemas.TokenOutputSchema:
+    user = await users_services.authenticate_user(
+        db,
+        username=form_data.username,
+        password=form_data.password,
+    )  # type: ignore
     access_token = users_services.create_access_token(data={"sub": user.username})
-    return {"access_token": access_token}
+    return {"access_token": access_token}  # type: ignore

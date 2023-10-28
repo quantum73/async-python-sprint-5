@@ -12,4 +12,4 @@ class UserRepository(DatabaseRepository[User, PydanticSchemaType]):
         return results.scalar_one_or_none()
 
 
-users_crud = UserRepository(User)
+users_crud: UserRepository = UserRepository(User)
