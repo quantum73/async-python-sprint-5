@@ -1,8 +1,8 @@
-"""init db
+"""01_init_db
 
-Revision ID: f11749b6cbb0
+Revision ID: 39d15b0bc65f
 Revises: 
-Create Date: 2023-10-24 20:55:33.416681
+Create Date: 2023-10-28 22:31:20.491257
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
-revision: str = 'f11749b6cbb0'
+revision: str = '39d15b0bc65f'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -36,10 +36,9 @@ def upgrade() -> None:
     sa.Column('path', sa.String(length=2056), nullable=False),
     sa.Column('size', sa.Integer(), nullable=False),
     sa.Column('is_downloadable', sa.Boolean(), nullable=True),
-    sa.Column('user_id', postgresql.UUID(), nullable=True),
+    sa.Column('user_id', postgresql.UUID(), nullable=False),
     sa.Column('created_at', sa.DateTime(), server_default=sa.text('now()'), nullable=True),
-    sa.Column('updated_at', sa.DateTime(), nullable=True),
-    sa.ForeignKeyConstraint(['user_id'], ['user.id'], ),
+    sa.ForeignKeyConstraint(['user_id'], ['user.id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_file_created_at'), 'file', ['created_at'], unique=False)

@@ -15,7 +15,7 @@ class FileRepository(DatabaseRepository[File, PydanticSchemaType]):
         results = await db.execute(statement=statement)
         return results.scalar_one_or_none()
 
-    async def get_file_by_id_or_path(self, db: AsyncSession, *, idx: str | UUID, path: str) -> ModelType | None:
+    async def get_file_by_id_or_path(self, db: AsyncSession, *, idx: str | UUID | None, path: str) -> ModelType | None:
         statement = select(self._model).where(or_(self._model.id == idx, self._model.path == path))
         results = await db.execute(statement=statement)
         return results.scalar_one_or_none()

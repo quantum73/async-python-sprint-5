@@ -31,7 +31,7 @@ class NoneCompressor(CompressorProtocol):
     @classmethod
     def get_response(cls, *, file_path: str | Path) -> FileResponse:
         file_path = cls.prepare_file_path(file_path)
-        return FileResponse(path=file_path, filename=file_path.name)
+        return FileResponse(path=file_path.absolute(), filename=file_path.name)
 
 
 class ZipCompressor(CompressorProtocol):

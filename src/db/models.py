@@ -26,6 +26,6 @@ class File(Base):
     path = Column(String(2056), nullable=False)
     size = Column(Integer, nullable=False)
     is_downloadable = Column(Boolean, default=True)
-    user_id = Column(UUID, ForeignKey("user.id"), nullable=False)
+    user_id = Column(UUID, ForeignKey("user.id", ondelete="CASCADE"), nullable=False)
     user = relationship("User", back_populates="files")
     created_at = Column(DateTime, index=True, server_default=func.now())

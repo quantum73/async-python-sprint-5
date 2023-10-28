@@ -49,6 +49,11 @@ def get_prepared_file_from_body(file: UploadFile, path: tp.Annotated[str, Body(e
     return PreparedFileObject(path=path, obj=file)
 
 
+async def get_absolute_storage_file_path(file_obj: PreparedFileObject) -> Path:
+    file_path = file_obj.path.strip("/")
+    return settings.app.storage_directory / file_path
+
+
 async def create_file(db: AsyncSession, *, prepared_file_object: PreparedFileObject, user_id: str | UUID) -> ModelType:
     logger.info(f"Create file by User(#{user_id})")
     try:
@@ -81,7 +86,7 @@ async def get_file_by_path(db: AsyncSession, *, target_path: str) -> ModelType |
 
 async def get_file_by_id_or_path(db: AsyncSession, *, value: str) -> ModelType | None:
     logger.info(f'Get file by "{value}" id or path')
-    idx = value if is_valid_uuid4(value) else ""
+    idx = value if is_valid_uuid4(value) else None
     path = value
     file: ModelType | None = await files_crud.get_file_by_id_or_path(db, idx=idx, path=path)
     return file

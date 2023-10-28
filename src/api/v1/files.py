@@ -6,7 +6,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from core import exceptions
 from core.compressors import CompressorProtocol, get_compressor
-from core.config import settings
 from core.utils import Paginator, query_paginator
 from db import get_session
 from schemas import files as files_schemas, users as users_schemas
@@ -74,7 +73,7 @@ async def download_file(  # type: ignore
     if file_obj is None:
         raise exceptions.FileNotFoundException(path)
 
-    full_path = settings.app.storage_directory / file_obj.path
+    full_path = await files_services.get_absolute_storage_file_path(file_obj)
     return compressor.get_response(file_path=full_path)
 
 

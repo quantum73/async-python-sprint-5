@@ -3,7 +3,8 @@ from logging import config as logging_config
 from pathlib import Path
 
 from dotenv import load_dotenv
-from pydantic import PostgresDsn
+from pydantic import PostgresDsn, field_validator
+from pydantic_core.core_schema import ValidationInfo
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from core.logger import LOGGING
@@ -42,10 +43,29 @@ class ApplicationSettings(BaseSettings):
 
 
 class DatabaseSettings(BaseSettings):
-    model_config = SettingsConfigDict(env_prefix="database_")
+    model_config = SettingsConfigDict(env_prefix="postgres_")
 
-    dsn: PostgresDsn
+    db: str
+    user: str
+    password: str
+    host: str
+    port: int
     echo: bool = False
+    dsn: PostgresDsn | None = None
+
+    @field_validator("dsn", mode="before")
+    def assemble_db_connection(cls, value: PostgresDsn | str, info: ValidationInfo) -> PostgresDsn:
+        if isinstance(value, str):
+            return value
+
+        return PostgresDsn.build(
+            scheme="postgresql+asyncpg",
+            username=info.data["user"],
+            password=info.data["password"],
+            host=info.data["host"],
+            port=info.data["port"],
+            path=info.data["db"],
+        )
 
 
 class Settings(BaseSettings):
